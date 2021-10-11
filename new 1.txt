@@ -1,0 +1,47 @@
+1) LoginPage.HttpApi.Host.csproj
+<!-- <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic" Version="4.4.3" /> -->
+2) Copy module Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic in your project
+3) Add Reference to Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic 	
+   dotnet add reference ../../src/Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic/Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic.csproj
+5) comment out and replace
+	<!-- <Import Project="..\..\..\..\configureawait.props" /> -->
+	<Import Project="..\..\common.props" />
+6) comment out in Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic.csproj
+  <!-- <ItemGroup>
+    <ProjectReference Include="..\..\..\..\framework\src\Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy\Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy.csproj" />
+    <ProjectReference Include="..\..\..\..\framework\src\Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared\Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.csproj" />
+  </ItemGroup> -->
+7) Add packages
+   abp add-package Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy
+   abp add-package Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared
+8) Goto Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic\Themes\Basic\Themes\Basic\Layouts\Account.cshtml
+Comment out @if (MultiTenancyOptions.Value.IsEnabled statement
+
+9) Add in HttpApiHostModule
+private void ConfigureTenantResolver(ServiceConfigurationContext context, IConfiguration configuration)
+{
+	Configure<AbpTenantResolveOptions>(options =>
+		 {
+			 options.TenantResolvers.Clear();
+			 options.TenantResolvers.Add(new CurrentUserTenantResolveContributor());
+		 });
+}
+10) add Pages/Account folder to HttpApi.Host project
+11) add class CustomLoginModel to Account folder
+12) add Login.cshtml file to Account folder
+
+13)add a file login.css to the wwwroot folder of the HttpApi.Host project.
+14) Open file AbpBlazorCustomizeLoginPageHttpApiHostModule.cs and update the ConfigureBundles() method.private void ConfigureBundles()
+   {
+     Configure<AbpBundlingOptions>(options =>
+     {
+       options.StyleBundles.Configure(
+                 BasicThemeBundles.Styles.Global,
+                 bundle =>
+             {
+               bundle.AddFiles("/global-styles.css");
+               bundle.AddFiles("/login.css");
+             }
+             );
+     });
+   }
